@@ -1,7 +1,6 @@
 {
-  "name": "draw",
-  "private": true,
-  "version": "0.0.0",
+  "name": "drawcli",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +10,8 @@
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
+    "express": "^5.2.1",
+    "open": "^11.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tldraw": "^4.5.4"
@@ -28,5 +29,12 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",
     "vite": "^8.0.1"
-  }
+  },
+  "bin": {
+    "draw": "./bin/draw.js"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ]
 }
