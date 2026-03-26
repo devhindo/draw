@@ -20,7 +20,13 @@ Simply run this command anywhere in your terminal:
 draw
 ```
 
-This will instantly spin up a micro-server, open a new tab in your default browser straight to the whiteboard, and allow you to start drawing. When you are done, press `Ctrl+C` in your terminal to stop the server.
+This will instantly spin up a micro-server and open a new tab in your default browser. 
+
+### 🚀 New: Persistent Offline Drawings
+Your drawings are now **automatically saved to your current working directory**! 
+- The web UI features a beautiful sidebar showing all `.tldr` files in the folder you ran the command from.
+- Any changes you make are instantly auto-saved to your local hard drive.
+- You can create new drawings from the sidebar or by running `draw <filename>` to instantly jump into a specific file.
 
 ## Local Development
 
