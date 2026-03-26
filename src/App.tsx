@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Tldraw, Editor, getSnapshot } from 'tldraw'
+import { Tldraw, Editor, getSnapshot, DefaultMainMenu, DefaultMainMenuContent, TldrawUiMenuItem } from 'tldraw'
 import 'tldraw/tldraw.css'
 
 const assetUrls = {
@@ -28,7 +28,8 @@ function App() {
   const [activeFile, setActiveFile] = useState<string>('')
   const [snapshot, setSnapshot] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<string>('')
 
   const loadFiles = async () => {
     try {
@@ -42,17 +43,26 @@ function App() {
     }
   }
 
+  const getUniqueFileName = (baseName: string, fileList: string[]) => {
+    if (!fileList.includes(baseName)) return baseName;
+    let counter = 1;
+    while (fileList.includes(`${baseName}-${counter}`)) {
+      counter++;
+    }
+    return `${baseName}-${counter}`;
+  }
+
   // Initial load
   useEffect(() => {
     loadFiles().then(fileList => {
       const urlParams = new URLSearchParams(window.location.search)
       const fileFromUrl = urlParams.get('file')
+      
       if (fileFromUrl) {
         loadFile(fileFromUrl)
-      } else if (fileList.length > 0) {
-        loadFile(fileList[0])
       } else {
-        createNewFile('Untitled')
+        const newFileName = getUniqueFileName('Untitled', fileList)
+        createNewFile(newFileName, fileList)
       }
     })
   }, [])
@@ -74,31 +84,42 @@ function App() {
     setLoading(false)
   }
 
-  const createNewFile = async (name: string) => {
+  const createNewFile = async (name: string, currentFiles: string[] = files) => {
     setLoading(true)
-    setActiveFile(name)
+    const finalName = getUniqueFileName(name, currentFiles)
+    setActiveFile(finalName)
     setSnapshot(null)
     setLoading(false)
   }
 
   const handleMount = useCallback((editor: Editor) => {
+    if (!activeFile) return;
+
+    const saveFile = async () => {
+      setSaveStatus('Saving...')
+      const currentSnapshot = getSnapshot(editor.store)
+      try {
+        await fetch(`/api/save/${encodeURIComponent(activeFile)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(currentSnapshot)
+        })
+        setSaveStatus('Saved')
+        loadFiles() // Refresh list to ensure new files appear
+      } catch (e) {
+        console.error("Failed to save", e)
+        setSaveStatus('Error')
+      }
+    }
+
+    // Save immediately to ensure it shows up
+    saveFile()
+
     let timeout: any;
     const handleChange = () => {
       clearTimeout(timeout)
-      timeout = setTimeout(async () => {
-        if (!activeFile) return;
-        const currentSnapshot = getSnapshot(editor.store)
-        try {
-          await fetch(`/api/save/${encodeURIComponent(activeFile)}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(currentSnapshot)
-          })
-          loadFiles() // Refresh file list in case it's a new file
-        } catch (e) {
-          console.error("Failed to save", e)
-        }
-      }, 1000)
+      setSaveStatus('Saving...')
+      timeout = setTimeout(saveFile, 1000)
     }
     
     // Listen to changes in the document (shapes, etc.)
@@ -109,24 +130,35 @@ function App() {
     }
   }, [activeFile])
 
+  const components = {
+    MainMenu: () => (
+      <DefaultMainMenu>
+        <TldrawUiMenuItem
+          id="toggle-sidebar"
+          label={isSidebarOpen ? "Hide Sidebar" : "Show Sidebar"}
+          icon="menu"
+          readonlyOk
+          onSelect={() => setIsSidebarOpen(o => !o)}
+        />
+        <DefaultMainMenuContent />
+      </DefaultMainMenu>
+    )
+  }
+
   return (
     <div className="app-container">
       {isSidebarOpen && (
         <div className="sidebar">
           <div className="sidebar-header">
-            <h2>drawcli</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2>drawcli</h2>
+              <span className={`save-status ${saveStatus.replace('...', '').toLowerCase()}`}>{saveStatus}</span>
+            </div>
+            <button className="close-btn" onClick={() => setIsSidebarOpen(false)} title="Close Sidebar">
+              ×
+            </button>
           </div>
           <div className="sidebar-content">
-            <button 
-              className="new-btn"
-              onClick={() => {
-                const name = prompt("Enter new drawing name:", "Untitled")
-                if (name) createNewFile(name)
-              }}
-            >
-              + New Drawing
-            </button>
-            
             <div className="file-list">
               {files.map(f => (
                 <div 
@@ -143,20 +175,14 @@ function App() {
       )}
       
       <div className="main-content">
-        <button 
-          className="toggle-sidebar" 
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          title="Toggle Sidebar"
-        >
-          ☰
-        </button>
-        {!loading && (
+        {!loading && activeFile && (
           <div className="tldraw-wrapper">
             <Tldraw 
               key={activeFile} 
               assetUrls={assetUrls} 
               {...(snapshot ? { snapshot } : {})}
               onMount={handleMount} 
+              components={components}
             />
           </div>
         )}
