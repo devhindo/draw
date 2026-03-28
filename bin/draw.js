@@ -21,6 +21,19 @@ const distPath = path.join(__dirname, '..', 'dist');
 const workDir = process.cwd();
 const dataDir = path.join(os.homedir(), '.drawdata');
 
+if (process.argv.includes('--clear')) {
+  try {
+    if (existsSync(dataDir)) {
+      await fs.rm(dataDir, { recursive: true, force: true });
+    }
+    console.log(`\n🧹 Successfully cleared all drawings from ${dataDir}\n`);
+    process.exit(0);
+  } catch (err) {
+    console.error(`\n❌ Error clearing drawings: ${err.message}\n`);
+    process.exit(1);
+  }
+}
+
 if (!existsSync(distPath)) {
   console.error("Error: 'dist' directory not found. Please ensure the project is built before publishing.");
   process.exit(1);

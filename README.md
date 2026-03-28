@@ -22,11 +22,17 @@ draw
 
 This will instantly spin up a micro-server and open a new tab in your default browser. 
 
-### 🚀 New: Persistent Offline Drawings
-Your drawings are now **automatically saved to your current working directory**! 
-- The web UI features a beautiful sidebar showing all `.tldr` files in the folder you ran the command from.
+### 🚀 Persistent Offline Drawings
+Your drawings are now **automatically saved to a global folder (`~/.drawdata`)**! 
+- The web UI features a beautiful sidebar showing all your previous drawings.
 - Any changes you make are instantly auto-saved to your local hard drive.
 - You can create new drawings from the sidebar or by running `draw <filename>` to instantly jump into a specific file.
+
+### 🧹 Clear All Drawings
+If you ever want to completely wipe your canvas history and start fresh, run:
+```bash
+draw --clear
+```
 
 ## Local Development
 
