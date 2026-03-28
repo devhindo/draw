@@ -43,27 +43,13 @@ function App() {
     }
   }
 
-  const getUniqueFileName = (baseName: string, fileList: string[]) => {
-    if (!fileList.includes(baseName)) return baseName;
-    let counter = 1;
-    while (fileList.includes(`${baseName}-${counter}`)) {
-      counter++;
-    }
-    return `${baseName}-${counter}`;
-  }
-
   // Initial load
   useEffect(() => {
-    loadFiles().then(fileList => {
+    loadFiles().then(() => {
       const urlParams = new URLSearchParams(window.location.search)
-      const fileFromUrl = urlParams.get('file')
+      const fileFromUrl = urlParams.get('file') || 'default'
       
-      if (fileFromUrl) {
-        loadFile(fileFromUrl)
-      } else {
-        const newFileName = getUniqueFileName('Untitled', fileList)
-        createNewFile(newFileName, fileList)
-      }
+      loadFile(fileFromUrl)
     })
   }, [])
 
@@ -81,14 +67,6 @@ function App() {
     } catch (err) {
       setSnapshot(null)
     }
-    setLoading(false)
-  }
-
-  const createNewFile = async (name: string, currentFiles: string[] = files) => {
-    setLoading(true)
-    const finalName = getUniqueFileName(name, currentFiles)
-    setActiveFile(finalName)
-    setSnapshot(null)
     setLoading(false)
   }
 
@@ -112,14 +90,11 @@ function App() {
       }
     }
 
-    // Save immediately to ensure it shows up
-    saveFile()
-
     let timeout: any;
     const handleChange = () => {
       clearTimeout(timeout)
       setSaveStatus('Saving...')
-      timeout = setTimeout(saveFile, 1000)
+      timeout = setTimeout(saveFile, 100)
     }
     
     // Listen to changes in the document (shapes, etc.)
