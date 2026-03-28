@@ -2,9 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import fs from 'fs/promises'
 import path from 'path'
+import os from 'os'
 import { existsSync } from 'fs'
 
-const dataDir = path.join(process.cwd(), '.drawdata');
+const dataDir = path.join(os.homedir(), '.drawdata');
 
 const ensureDataDir = async () => {
   try {

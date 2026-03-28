@@ -5,6 +5,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import os from 'os';
 import open from 'open';
 import express from 'express';
 import cors from 'cors';
@@ -18,7 +19,7 @@ app.use(express.json({ limit: '50mb' }));
 
 const distPath = path.join(__dirname, '..', 'dist');
 const workDir = process.cwd();
-const dataDir = path.join(workDir, '.drawdata');
+const dataDir = path.join(os.homedir(), '.drawdata');
 
 if (!existsSync(distPath)) {
   console.error("Error: 'dist' directory not found. Please ensure the project is built before publishing.");
