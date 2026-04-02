@@ -34,6 +34,18 @@ if (process.argv.includes('--clear')) {
   }
 }
 
+if (process.argv.includes('--version') || process.argv.includes('-v')) {
+  try {
+    const pkgPath = path.join(__dirname, '..', 'package.json');
+    const pkgData = await fs.readFile(pkgPath, 'utf8');
+    const pkg = JSON.parse(pkgData);
+    console.log(`v${pkg.version}`);
+  } catch (err) {
+    console.log('v1.0.0');
+  }
+  process.exit(0);
+}
+
 if (!existsSync(distPath)) {
   console.error("Error: 'dist' directory not found. Please ensure the project is built before publishing.");
   process.exit(1);
