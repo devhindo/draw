@@ -4,12 +4,12 @@ Welcome to the `drawcli` codebase. As an AI autonomous agent, coding assistant (
 
 ## 🛑 Critical Git Mandate
 
-**UNDER NO CIRCUMSTANCES should you run `git add .`, `git add -A`, `git commit -a`, `git commit .` or any similar command.** 
+**UNDER NO CIRCUMSTANCES should you run `git add`, `git commit`, `git push`, or any similar git modification command.**
 
-Bulk operations are strictly forbidden to prevent the accidental inclusion of unwanted, generated, or sensitive files (e.g., environment variables, `.drawdata`, or local builds). 
-- Always be precise and explicit about which files you are staging and committing.
-- Example: `git add src/App.tsx bin/draw.js`
-- Always run `git status` and `git diff` before committing to verify exactly what is being staged.
+- **DO NOT commit code under any circumstances.**
+- **DO NOT stage files.**
+- Even if you are asked to "make a release", "bump a version", or "save changes", you must **leave the Git operations to the user**. You can update the `package.json` version string or generate the commands for the user to copy/paste, but **you must not execute `git add` or `git commit` yourself**.
+- This is a strict rule to prevent the accidental inclusion of unwanted, generated, or sensitive files, and to ensure the user has full final review over their commit history.
 
 ---
 
@@ -118,4 +118,4 @@ As an AI, before finalizing your response:
 1. **Understand First**: Read files entirely before attempting edits. Never guess file paths.
 2. **Self-Correction**: Use the `bash` tool to run `npm run lint` and `npm run build` to verify your changes introduced no syntax or typing errors.
 3. **Review Diff**: Ensure you haven't accidentally deleted unrelated code. Use `git diff` to review your own changes.
-4. **Commit**: If asked to commit, write concise, imperative commit messages (e.g., "Add delete file functionality to sidebar"). Remember the git mandate at the top.
+4. **Commit**: If asked to commit, remind the user of the Git Mandate at the top of this file and explain that you are forbidden from running `git commit`. Do not do it.
