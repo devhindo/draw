@@ -23,7 +23,7 @@ export default defineConfig({
   plugins: [
     react(),
     {
-      name: 'drawcli-api',
+      name: 'draw-api',
       configureServer(server) {
         // Save endpoint
         server.middlewares.use(async (req, res, next) => {
@@ -46,7 +46,7 @@ export default defineConfig({
               if (activeConnections <= 0) {
                 activeConnections = 0;
                 shutdownTimer = setTimeout(() => {
-                  console.log('\n👋 Browser tab closed. Shutting down drawcli dev server...\n');
+                  console.log('\n👋 Browser tab closed. Shutting down draw dev server...\n');
                   process.exit(0);
                 }, 500);
               }

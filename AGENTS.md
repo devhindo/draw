@@ -1,6 +1,6 @@
-# Agent Instructions for drawcli (AGENTS.md)
+# Agent Instructions for draw (AGENTS.md)
 
-Welcome to the `drawcli` codebase. As an AI autonomous agent, coding assistant (like Cursor or Copilot), or developer operating in this repository, you must adhere strictly to the guidelines and workflows defined below. This document serves as the universal `.cursorrules` / `.github/copilot-instructions.md` equivalent for this project.
+Welcome to the `draw` codebase. As an AI autonomous agent, coding assistant (like Cursor or Copilot), or developer operating in this repository, you must adhere strictly to the guidelines and workflows defined below. This document serves as the universal `.cursorrules` / `.github/copilot-instructions.md` equivalent for this project.
 
 ## 🛑 Critical Git Mandate
 
@@ -15,7 +15,7 @@ Welcome to the `drawcli` codebase. As an AI autonomous agent, coding assistant (
 
 ## 1. Project Overview & Architecture
 
-`drawcli` is a local desktop-like application that launches a `tldraw` whiteboarding instance in the browser, while serving and saving data locally. 
+`draw` is a local desktop-like application that launches a `tldraw` whiteboarding instance in the browser, while serving and saving data locally. 
 - **Frontend**: React 19, TypeScript, Vite. Located in `/src` and `/public`.
 - **Backend/CLI**: Node.js Express server. Located in `/bin/draw.js`.
 - **Data storage**: Saves `.tldr` snapshot files locally to `~/.drawdata`.

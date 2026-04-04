@@ -134,7 +134,7 @@ function App() {
         <div className="sidebar">
           <div className="sidebar-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h2>drawcli</h2>
+              <h2>draw</h2>
               <span className={`save-status ${saveStatus.replace('...', '').toLowerCase()}`}>{saveStatus}</span>
             </div>
             <button className="close-btn" onClick={() => setIsSidebarOpen(false)} title="Close Sidebar">

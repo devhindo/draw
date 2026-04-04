@@ -1,4 +1,4 @@
-# 🎨 drawcli
+# 🎨 draw
 
 [![npm version](https://badge.fury.io/js/drawcli.svg)](https://www.npmjs.com/package/drawcli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -34,10 +34,10 @@ Starting a whiteboard is as simple as typing `draw` in your terminal. Here are t
 | `draw` | Starts the app with a default canvas and opens your browser. |
 | `draw <filename>` | Opens (or creates) a specific drawing file. e.g., `draw architecture-diagram` |
 | `draw --clear` | 🧹 Wipes all your saved drawings from `~/.drawdata`. Use with caution! |
-| `draw --version` (or `-v`) | Prints the installed version of `drawcli`. |
+| `draw --version` (or `-v`) | Prints the installed version of `draw`. |
 
 ### 🔄 Smart Auto-Shutdown
-You don't need to manually `Ctrl+C` to kill the server. When you close the `drawcli` tab in your browser, the local server will automatically stop running in your terminal, freeing up the port and keeping your workflow clean.
+You don't need to manually `Ctrl+C` to kill the server. When you close the `draw` tab in your browser, the local server will automatically stop running in your terminal, freeing up the port and keeping your workflow clean.
 
 ---
 

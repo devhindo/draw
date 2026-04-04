@@ -86,7 +86,7 @@ app.get('/api/keepalive', (req, res) => {
     if (activeConnections <= 0) {
       activeConnections = 0;
       shutdownTimer = setTimeout(() => {
-        console.log('\n👋 Browser tab closed. Shutting down drawcli...\n');
+        console.log('\n👋 Browser tab closed. Shutting down draw...\n');
         process.exit(0);
       }, 500); // reduced timeout to 500ms
     }
