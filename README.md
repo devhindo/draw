@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/drawcli.svg)](https://www.npmjs.com/package/drawcli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<video src="assets/videos/demo.webm" autoplay loop muted playsinline width="100%"></video>
+<video src="https://github.com/devhindo/draw/raw/main/assets/videos/demo.webm" autoplay loop muted playsinline width="100%"></video>
 
 A lightning-fast, fully offline CLI tool that instantly spins up a local `tldraw` whiteboard right from your terminal. 
 
