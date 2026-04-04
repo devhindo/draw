@@ -109,24 +109,37 @@ app.use((req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
-// Start the server on a random available port
-const server = app.listen(0, async () => {
-  const actualPort = server.address().port;
-  let startFile = process.argv[2] || 'default';
-  if (startFile && startFile.endsWith('.tldr')) {
-    startFile = startFile.slice(0, -5);
-  }
-  
-  const url = `http://localhost:${actualPort}?file=${encodeURIComponent(startFile)}`;
-  
-  console.log(`\n🖌️  Draw CLI is ready!`);
-  console.log(`📁 Saving drawings to: ${dataDir}`);
-  console.log(`👉 Running at: ${url}\n`);
-  console.log(`Press Ctrl+C to stop the server.\n`);
-  
-  try {
-    await open(url);
-  } catch (err) {
-    // Gracefully handle if there is no graphical environment
-  }
-});
+// Start the server with a stable port to preserve browser localStorage (e.g. dark mode)
+const startServer = (port = 45192) => {
+  const server = app.listen(port, async () => {
+    const actualPort = server.address().port;
+    let startFile = process.argv[2] || 'default';
+    if (startFile && startFile.endsWith('.tldr')) {
+      startFile = startFile.slice(0, -5);
+    }
+    
+    const url = `http://localhost:${actualPort}?file=${encodeURIComponent(startFile)}`;
+    
+    console.log(`\n🖌️  Draw CLI is ready!`);
+    console.log(`📁 Saving drawings to: ${dataDir}`);
+    console.log(`👉 Running at: ${url}\n`);
+    console.log(`Press Ctrl+C to stop the server.\n`);
+    
+    try {
+      await open(url);
+    } catch (err) {
+      // Gracefully handle if there is no graphical environment
+    }
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      // If port is in use, try the next one
+      startServer(port + 1);
+    } else {
+      console.error('Server error:', err);
+    }
+  });
+};
+
+startServer();
