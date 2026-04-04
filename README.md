@@ -28,6 +28,9 @@ Your drawings are now **automatically saved to a global folder (`~/.drawdata`)**
 - Any changes you make are instantly auto-saved to your local hard drive.
 - You can create new drawings from the sidebar or by running `draw <filename>` to instantly jump into a specific file.
 
+### 🔄 Smart Auto-Shutdown
+The CLI is smart! When you close the `drawcli` browser tab, the local server will automatically stop running in your terminal, freeing up the port and keeping your system clean.
+
 ### 🧹 Clear All Drawings
 If you ever want to completely wipe your canvas history and start fresh, run:
 ```bash
