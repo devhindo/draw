@@ -10,8 +10,13 @@ const dataDir = path.join(os.homedir(), '.drawdata');
 const ensureDataDir = async () => {
   try {
     await fs.mkdir(dataDir, { recursive: true });
-  } catch (err) {}
+  } catch {
+    // ignore
+  }
 };
+
+let activeConnections = 0;
+let shutdownTimer: NodeJS.Timeout | null = null;
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -22,6 +27,33 @@ export default defineConfig({
       configureServer(server) {
         // Save endpoint
         server.middlewares.use(async (req, res, next) => {
+          if (req.url === '/api/keepalive' && req.method === 'GET') {
+            res.writeHead(200, {
+              'Content-Type': 'text/event-stream',
+              'Cache-Control': 'no-cache',
+              'Connection': 'keep-alive'
+            });
+            res.write('data: connected\n\n');
+
+            activeConnections++;
+            if (shutdownTimer) {
+              clearTimeout(shutdownTimer);
+              shutdownTimer = null;
+            }
+
+            req.on('close', () => {
+              activeConnections--;
+              if (activeConnections <= 0) {
+                activeConnections = 0;
+                shutdownTimer = setTimeout(() => {
+                  console.log('\n👋 Browser tab closed. Shutting down drawcli dev server...\n');
+                  process.exit(0);
+                }, 500);
+              }
+            });
+            return;
+          }
+
           if (req.url && req.url.startsWith('/api/save/') && req.method === 'POST') {
             let body = '';
             req.on('data', chunk => { body += chunk.toString() });
@@ -35,7 +67,7 @@ export default defineConfig({
                 await fs.writeFile(filePath, body);
                 res.setHeader('Content-Type', 'application/json');
                 res.end(JSON.stringify({ success: true }));
-              } catch (e) {
+              } catch {
                 res.statusCode = 500;
                 res.end(JSON.stringify({ error: 'Failed to save' }));
               }
@@ -50,7 +82,7 @@ export default defineConfig({
               const tldrFiles = files.filter(f => f.endsWith('.tldr')).map(f => f.slice(0, -5));
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ files: tldrFiles }));
-            } catch (err) {
+            } catch {
               res.statusCode = 500;
               res.end(JSON.stringify({ error: 'Failed' }));
             }
@@ -74,7 +106,7 @@ export default defineConfig({
               const data = await fs.readFile(filePath, 'utf8');
               res.setHeader('Content-Type', 'application/json');
               res.end(data);
-            } catch (e) {
+            } catch {
               res.statusCode = 500;
               res.end(JSON.stringify({ error: 'Failed' }));
             }

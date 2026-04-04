@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useCallback } from 'react'
 import { Tldraw, Editor, getSnapshot, DefaultMainMenu, DefaultMainMenuContent, TldrawUiMenuItem } from 'tldraw'
+import type { TLStoreSnapshot } from 'tldraw'
 import 'tldraw/tldraw.css'
 
 const assetUrls = {
@@ -26,7 +28,7 @@ const assetUrls = {
 function App() {
   const [files, setFiles] = useState<string[]>([])
   const [activeFile, setActiveFile] = useState<string>('')
-  const [snapshot, setSnapshot] = useState<any>(null)
+  const [snapshot, setSnapshot] = useState<TLStoreSnapshot | null>(null)
   const [loading, setLoading] = useState(true)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [saveStatus, setSaveStatus] = useState<string>('')
@@ -43,16 +45,6 @@ function App() {
     }
   }
 
-  // Initial load
-  useEffect(() => {
-    loadFiles().then(() => {
-      const urlParams = new URLSearchParams(window.location.search)
-      const fileFromUrl = urlParams.get('file') || 'default'
-      
-      loadFile(fileFromUrl)
-    })
-  }, [])
-
   const loadFile = async (filename: string) => {
     setLoading(true)
     setActiveFile(filename)
@@ -64,11 +56,27 @@ function App() {
       } else {
         setSnapshot(null)
       }
-    } catch (err) {
+    } catch {
       setSnapshot(null)
     }
     setLoading(false)
   }
+
+  // Initial load
+  useEffect(() => {
+    const evtSource = new EventSource('/api/keepalive');
+
+    loadFiles().then(() => {
+      const urlParams = new URLSearchParams(window.location.search)
+      const fileFromUrl = urlParams.get('file') || 'default'
+      
+      loadFile(fileFromUrl)
+    })
+
+    return () => {
+      evtSource.close();
+    }
+  }, [])
 
   const handleMount = useCallback((editor: Editor) => {
     if (!activeFile) return;
@@ -90,7 +98,7 @@ function App() {
       }
     }
 
-    let timeout: any;
+    let timeout: ReturnType<typeof setTimeout>;
     const handleChange = () => {
       clearTimeout(timeout)
       setSaveStatus('Saving...')

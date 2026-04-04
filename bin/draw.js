@@ -60,7 +60,39 @@ const ensureDataDir = async () => {
   }
 };
 
+let activeConnections = 0;
+let shutdownTimer = null;
+let hasConnected = false;
+
 // API Routes
+app.get('/api/keepalive', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+  });
+  
+  res.write('data: connected\n\n');
+
+  activeConnections++;
+  hasConnected = true;
+  if (shutdownTimer) {
+    clearTimeout(shutdownTimer);
+    shutdownTimer = null;
+  }
+
+  req.on('close', () => {
+    activeConnections--;
+    if (activeConnections <= 0) {
+      activeConnections = 0;
+      shutdownTimer = setTimeout(() => {
+        console.log('\n👋 Browser tab closed. Shutting down drawcli...\n');
+        process.exit(0);
+      }, 500); // reduced timeout to 500ms
+    }
+  });
+});
+
 app.get('/api/files', async (req, res) => {
   await ensureDataDir();
   try {
@@ -127,8 +159,19 @@ const startServer = (port = 45192) => {
     
     try {
       await open(url);
+      
+      // Safety net: if browser fails to connect within 5 seconds of opening, 
+      // don't leave the server running indefinitely.
+      setTimeout(() => {
+        if (!hasConnected) {
+          console.log('\n⚠️ No browser connection detected after 5 seconds. Shutting down...\n');
+          process.exit(0);
+        }
+      }, 5000);
+      
     } catch (err) {
       // Gracefully handle if there is no graphical environment
+      console.log('\n⚠️ Could not automatically open a browser window.\n');
     }
   });
 
