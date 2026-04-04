@@ -47,6 +47,16 @@ When making changes, always ensure the project builds correctly and passes linte
 - **Running a Single Test**: Once configured, use `npx vitest run path/to/your.test.ts`. 
 - Always prioritize testing core CLI arguments (e.g., `--clear`, `--version`) and Express API routes before testing UI components.
 
+### Publishing & Releasing
+To release a new version of the package to the public, follow this workflow:
+1. Ensure the working directory is clean (`git status`).
+2. Bump the package version using npm: `npm version <patch|minor|major> -m "chore: release %s"`
+3. Push the commit and new tags to GitHub: `git push && git push --tags`
+4. Create a GitHub release for the new tag: `gh release create v<version> --title "v<version>: <Summary>" --notes "<Description>"`
+5. Publish to the npm registry: 
+   - First, ensure you are logged in to npm via terminal: `npm login` (if not already logged in, check with `npm whoami`).
+   - Then publish: `npm publish`
+
 ---
 
 ## 3. Code Style & Engineering Guidelines
